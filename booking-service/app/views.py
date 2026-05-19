@@ -27,6 +27,7 @@ def slots(request):
         return JsonResponse({"error": "Укажите дату"}, status=400)
 
     booked_qs = Booking.objects.filter(date=date).values_list("time", "user_id")
+    # Преобразуем время в строку формата HH:MM для сравнения
     booked_map = {t.strftime("%H:%M"): uid for t, uid in booked_qs}
 
     payload = get_jwt_payload(request)
@@ -58,7 +59,14 @@ def create_booking(request):
     if not date or not time_val:
         return JsonResponse({"error": "Укажите дату и время"}, status=400)
 
-    if Booking.objects.filter(date=date, time=time_val).exists():
+    # Преобразуем строку времени в объект time для Django
+    from datetime import datetime
+    try:
+        time_obj = datetime.strptime(time_val, "%H:%M").time()
+    except ValueError:
+        return JsonResponse({"error": "Неверный формат времени"}, status=400)
+
+    if Booking.objects.filter(date=date, time=time_obj).exists():
         return JsonResponse({"error": "Этот слот уже занят"}, status=409)
 
     payload = request.user_payload
@@ -66,7 +74,7 @@ def create_booking(request):
         user_id=payload["user_id"],
         username=payload.get("first_name") or payload["username"],
         date=date,
-        time=time_val,
+        time=time_obj,
     )
     return JsonResponse({"booking": booking.to_dict()}, status=201)
 

@@ -27,7 +27,9 @@ services:
   auth-service:
     build: ./auth-service
     restart: unless-stopped
-    env_file: ./auth-service/.env
+    env_file: 
+      - .env
+      - ./auth-service/.env
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_DB: auth_db
@@ -43,7 +45,9 @@ services:
   booking-service:
     build: ./booking-service
     restart: unless-stopped
-    env_file: ./booking-service/.env
+    env_file:
+      - .env
+      - ./booking-service/.env
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_DB: booking_db
