@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head><meta charset="UTF-8"><title>{% block title %}Комментарии{% endblock %}</title>
+{% load static %}<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet"></head>
+<body>
+    <div class="video-background"><video autoplay muted loop id="bg-video"><source src="{% static 'videos/raindrops_on_a_window.mp4' %}" type="video/mp4"></video><div class="overlay"></div></div>
+    <nav class="navbar"><div class="container nav-container"><a href="/" class="logo">ШоуРум</a>
+    <ul class="nav-links"><li><a href="/">Главная</a></li><li><a href="/info/">Инфо</a></li><li><a href="/mybookings/">Мои брони</a></li><li><a href="/comments/">Комментарии</a></li>
+    <li class="dropdown"><a href="#" class="dropbtn">{{ user.username }} ▼</a><div class="dropdown-content"><a href="/logout/">Выйти</a></div></li></ul></div></nav>
+    <main class="container main-content">{% block content %}{% endblock %}</main>
+    <footer><p>&copy; 2024 ШоуРум</p></footer>
+</body></html>
