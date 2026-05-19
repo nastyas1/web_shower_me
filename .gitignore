@@ -1,26 +1,50 @@
 ```
-# Configuration and system files
-*.conf.swp
-*.config.swp
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.venv.bak/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Build artifacts
+build/
+dist/
+*.egg
+*.egg-info/
+MANIFEST
 
 # Logs
 *.log
 
-# Temporary files
-*.tmp
-*.temp
-
-# Environment files
+# Environment variables
 .env
 .env.local
 *.env.*
 
-# Backup files
-*~
-*.bak
-*.backup
+# Coverage reports
+.coverage
+coverage/
+htmlcov/
 
-# OS generated files
+# Testing
+.pytest_cache/
+.mypy_cache/
+.hypothesis/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+
+# OS
 .DS_Store
 Thumbs.db
 ```
