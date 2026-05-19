@@ -1,1 +1,26 @@
-Nothing needs to be added to .gitignore since the only change is a modification to a template file (comments.html), which is source code that should be tracked in version control. No build artifacts, dependencies, or temporary files are present in the changes.
+```
+# Configuration and system files
+*.conf.swp
+*.config.swp
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Environment files
+.env
+.env.local
+*.env.*
+
+# Backup files
+*~
+*.bak
+*.backup
+
+# OS generated files
+.DS_Store
+Thumbs.db
+```
