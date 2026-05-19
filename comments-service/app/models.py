@@ -20,5 +20,5 @@ class Comment(models.Model):
             "user_id": self.user_id,
             "author": self.author,
             "text": self.text,
-            "created_at": self.created_at.strftime("%d.%m.%Y %H:%M"),
+            "created_at": self.created_at.isoformat(),
         }
