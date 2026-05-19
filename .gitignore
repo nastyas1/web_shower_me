@@ -10,9 +10,6 @@ __pycache__/
 *.swp
 *.swo
 
-# Django/Python migrations
-**/migrations/
-
 # Dependencies
 .venv/
 venv/
