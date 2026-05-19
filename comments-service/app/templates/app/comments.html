@@ -199,12 +199,20 @@
             
             if (!text) return;
             
+            // Получаем актуальный токен из localStorage
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                alert('Требуется авторизация. Пожалуйста, войдите в систему.');
+                location.href = '/auth/';
+                return;
+            }
+            
             try {
                 const response = await fetch(`${API_BASE}/create/`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${accessToken}`
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({ text })
                 });
@@ -215,7 +223,14 @@
                     textarea.value = '';
                     // Комментарий появится через SSE
                 } else {
-                    alert(data.error || 'Ошибка отправки комментария');
+                    if (response.status === 401) {
+                        alert('Сессия истекла. Пожалуйста, войдите снова.');
+                        localStorage.removeItem('access_token');
+                        localStorage.removeItem('refresh_token');
+                        location.href = '/auth/';
+                    } else {
+                        alert(data.error || 'Ошибка отправки комментария');
+                    }
                 }
             } catch (err) {
                 console.error('Ошибка отправки:', err);
