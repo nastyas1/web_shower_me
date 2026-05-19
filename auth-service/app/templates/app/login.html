@@ -138,6 +138,7 @@
                     accessToken = data.access;
                     localStorage.setItem('access_token', data.access);
                     localStorage.setItem('refresh_token', data.refresh);
+                    console.log('Вход успешен, токен сохранён');
                     showUserInfo(data.user);
                 } else {
                     errorEl.textContent = data.error || 'Ошибка входа';
@@ -172,6 +173,7 @@
                     accessToken = data.access;
                     localStorage.setItem('access_token', data.access);
                     localStorage.setItem('refresh_token', data.refresh);
+                    console.log('Регистрация успешна, токен сохранён');
                     showUserInfo(data.user);
                 } else if (data.errors) {
                     const errors = Object.values(data.errors).join('<br>');
@@ -205,14 +207,23 @@
         window.addEventListener('load', async () => {
             const savedToken = localStorage.getItem('access_token');
             if (savedToken) {
+                console.log('Найден сохранённый токен, проверяем...');
                 try {
                     const response = await fetch(`${API_BASE}/me/`, {
-                        headers: { 'Authorization': `Bearer ${savedToken}` }
+                        method: 'GET',
+                        headers: { 
+                            'Authorization': `Bearer ${savedToken}`,
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'same-origin'
                     });
+                    console.log('Статус проверки токена:', response.status);
                     if (response.ok) {
                         const user = await response.json();
+                        console.log('Токен валиден, пользователь:', user.name);
                         showUserInfo(user);
                     } else {
+                        console.warn('Токен недействителен, удаляем');
                         localStorage.removeItem('access_token');
                         localStorage.removeItem('refresh_token');
                     }

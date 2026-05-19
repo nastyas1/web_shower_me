@@ -68,6 +68,7 @@
         async function checkAuth() {
             const savedToken = localStorage.getItem('access_token');
             if (!savedToken) {
+                console.warn('Нет сохранённого токена, показываем предупреждение');
                 document.getElementById('auth-warning').classList.remove('hidden');
                 document.getElementById('booking-section').classList.add('hidden');
                 document.getElementById('user-nav').classList.add('hidden');
@@ -76,11 +77,20 @@
             
             try {
                 const response = await fetch('/auth/me/', {
-                    headers: { 'Authorization': `Bearer ${savedToken}` }
+                    method: 'GET',
+                    headers: { 
+                        'Authorization': `Bearer ${savedToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'same-origin'
                 });
+                
+                console.log('Проверка токена, статус:', response.status);
+                
                 if (response.ok) {
                     currentUser = await response.json();
                     accessToken = savedToken;
+                    console.log('Токен валиден, пользователь:', currentUser.name);
                     document.getElementById('auth-warning').classList.add('hidden');
                     document.getElementById('booking-section').classList.remove('hidden');
                     document.getElementById('user-nav').classList.remove('hidden');
@@ -88,6 +98,8 @@
                     loadSlots();
                     loadMyBookings();
                     return true;
+                } else {
+                    console.error('Токен недействителен, статус:', response.status);
                 }
             } catch (err) {
                 console.error('Ошибка проверки токена:', err);
@@ -243,7 +255,6 @@
                 console.error('Ошибка отмены:', err);
                 alert('Ошибка соединения с сервером');
             }
-        }
         }
         
         function cancelBooking(date, time) {
