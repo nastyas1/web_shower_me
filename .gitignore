@@ -1,1 +1,1 @@
-Nothing needs to be added to .gitignore since the only change is a template file modification (`comments-service/app/templates/app/comments.html`) which is a source file that should be tracked in version control.
+Nothing needs to be added to .gitignore since the only change is a modification to a template file (comments.html), which is source code that should be tracked in version control. No build artifacts, dependencies, or temporary files are present in the changes.
