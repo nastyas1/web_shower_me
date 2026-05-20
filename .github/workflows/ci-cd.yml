@@ -1,0 +1,178 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ${{ github.repository }}
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies (Auth Service)
+        run: |
+          cd auth-service
+          pip install -r requirements.txt
+          pip install pytest pytest-django flake8 black
+
+      - name: Lint Auth Service
+        run: |
+          cd auth-service
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Run Tests (Auth Service)
+        run: |
+          cd auth-service
+          pytest tests/ -v
+        env:
+          DB_HOST: localhost
+          DB_NAME: testdb
+          DB_USER: postgres
+          DB_PASSWORD: testpassword
+          DB_PORT: 5432
+
+      - name: Install dependencies (Booking Service)
+        run: |
+          cd booking-service
+          pip install -r requirements.txt
+          pip install pytest pytest-django flake8 black
+
+      - name: Lint Booking Service
+        run: |
+          cd booking-service
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Run Tests (Booking Service)
+        run: |
+          cd booking-service
+          pytest tests/ -v
+        env:
+          DB_HOST: localhost
+          DB_NAME: testdb
+          DB_USER: postgres
+          DB_PASSWORD: testpassword
+          DB_PORT: 5432
+
+      - name: Install dependencies (Comments Service)
+        run: |
+          cd comments-service
+          pip install -r requirements.txt
+          pip install pytest pytest-django flake8 black
+
+      - name: Lint Comments Service
+        run: |
+          cd comments-service
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Run Tests (Comments Service)
+        run: |
+          cd comments-service
+          pytest tests/ -v
+        env:
+          DB_HOST: localhost
+          DB_NAME: testdb
+          DB_USER: postgres
+          DB_PASSWORD: testpassword
+          DB_PORT: 5432
+
+      - name: Install dependencies (Feedback Service)
+        run: |
+          cd feedback-service
+          pip install -r requirements.txt
+          pip install pytest pytest-django flake8 black
+
+      - name: Lint Feedback Service
+        run: |
+          cd feedback-service
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Run Tests (Feedback Service)
+        run: |
+          cd feedback-service
+          pytest tests/ -v
+        env:
+          DB_HOST: localhost
+          DB_NAME: testdb
+          DB_USER: postgres
+          DB_PASSWORD: testpassword
+          DB_PORT: 5432
+
+  build-and-push:
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Auth Service
+        uses: docker/build-push-action@v5
+        with:
+          context: ./auth-service
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/auth-service:${{ github.sha }}, ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/auth-service:latest
+
+      - name: Build and Push Booking Service
+        uses: docker/build-push-action@v5
+        with:
+          context: ./booking-service
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/booking-service:${{ github.sha }}, ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/booking-service:latest
+
+      - name: Build and Push Comments Service
+        uses: docker/build-push-action@v5
+        with:
+          context: ./comments-service
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/comments-service:${{ github.sha }}, ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/comments-service:latest
+
+      - name: Build and Push Feedback Service
+        uses: docker/build-push-action@v5
+        with:
+          context: ./feedback-service
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/feedback-service:${{ github.sha }}, ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/feedback-service:latest
