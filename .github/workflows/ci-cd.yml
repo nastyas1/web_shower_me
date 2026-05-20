@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main", "master", "nastya-dev05" ]
   pull_request:
-    branches: [ "main", "master" ]
+    branches: [ "main", "master", "nastya-dev05" ]
 
 env:
   REGISTRY: ghcr.io
@@ -132,7 +132,7 @@ jobs:
   build-and-push:
     needs: lint-and-test
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/nastya-dev05')
     
     permissions:
       contents: read
