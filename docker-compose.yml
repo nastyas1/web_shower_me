@@ -29,7 +29,7 @@ services:
     restart: unless-stopped
     env_file: 
       - .env
-      - ./auth-service/.env
+
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_DB: auth_db
@@ -47,7 +47,7 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-      - ./booking-service/.env
+
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_DB: booking_db
@@ -63,7 +63,8 @@ services:
   comments-service:
     build: ./comments-service
     restart: unless-stopped
-    env_file: ./comments-service/.env
+    env_file:
+      - .env
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_DB: comments_db
@@ -79,7 +80,8 @@ services:
   feedback-service:
     build: ./feedback-service
     restart: unless-stopped
-    env_file: ./feedback-service/.env
+    env_file:
+      - .env
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_DB: feedback_db
