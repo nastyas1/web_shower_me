@@ -53,12 +53,14 @@ def submit_feedback(request):
             f"🕐 {timezone.now().strftime('%d.%m.%Y %H:%M')}"
         )
         try:
-            http_requests.post(
+            resp = http_requests.post(
                 f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage",
                 json={"chat_id": settings.TELEGRAM_CHAT_ID, "text": text, "parse_mode": "HTML"},
                 timeout=5,
             )
-        except Exception:
-            pass
+            resp.raise_for_status()
+            print(f"Telegram message sent successfully: {resp.json()}")
+        except Exception as e:
+            print(f"Failed to send Telegram message: {e}")
 
     return JsonResponse({"success": True, "message": "Сообщение отправлено"})
