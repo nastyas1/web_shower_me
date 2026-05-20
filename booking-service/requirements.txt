@@ -2,3 +2,7 @@ Django==5.2.12
 psycopg2-binary==2.9.10
 gunicorn==22.0.0
 PyJWT==2.9.0
+pytest==8.3.5
+pytest-django==4.9.0
+flake8==7.1.0
+black==24.10.0

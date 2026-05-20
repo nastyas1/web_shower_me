@@ -1,42 +1,19 @@
 ```
-# Compiled and build artifacts
-*.pyc
+# Python
 __pycache__/
-*.o
-*.obj
-*.class
-*.exe
-*.dll
-*.so
-*.a
-*.out
-
-# Dependencies
-node_modules/
-venv/
-.venv/
-.env
-.env.local
-*.env.*
-
-# Build directories
-dist/
-build/
-target/
-.gradle/
-
-# Python specific
 *.pyc
-__pycache__/
 *.pyo
 *.pyd
 .Python
-*.so
-.Python
 env/
-.venv/
 venv/
-ENV/
+.venv/
+.ENV
+.ENV.local
+.env
+.env.local
+.env.*
+.python-version
 pip-log.txt
 pip-delete-this-directory.txt
 .tox/
@@ -47,23 +24,7 @@ nosetests.xml
 coverage.xml
 *.cover
 *.log
-.git/
-.mypy_cache/
-.pytest_cache/
-.hypothesis/
-
-# Editors
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS generated files
+.git/modules/
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 ```
