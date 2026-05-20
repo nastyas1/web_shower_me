@@ -1,1 +1,37 @@
-Nothing should be ignored based on the provided file changes. The only modified file is 'comments-service/app/models.py', which is a source code file and should not be added to .gitignore.
+```
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.ENV/
+.ENV.local
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# IDE
+.vscode/
+.idea/
+
+# Environment
+.env
+.env.local
+*.env
+
+# Build and distribution artifacts
+dist/
+build/
+*.egg-info/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+```
