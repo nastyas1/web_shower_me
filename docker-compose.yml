@@ -29,12 +29,23 @@ services:
     restart: unless-stopped
     env_file: 
       - .env
-
     environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: auth_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      DB_ENGINE: ${DB_ENGINE}
+      DB_NAME_AUTH: ${DB_NAME_AUTH}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST_AUTH: ${DB_HOST_AUTH}
+      DB_PORT: ${DB_PORT}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_EXPIRATION_HOURS: ${JWT_EXPIRATION_HOURS}
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DEBUG}
+      ALLOWED_HOSTS_AUTH: ${ALLOWED_HOSTS_AUTH}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      AUTH_SERVICE_URL: ${AUTH_SERVICE_URL}
+      FEEDBACK_SERVICE_URL: ${FEEDBACK_SERVICE_URL}
+      BOOKING_SERVICE_URL: ${BOOKING_SERVICE_URL}
+      COMMENTS_SERVICE_URL: ${COMMENTS_SERVICE_URL}
     depends_on:
       postgres:
         condition: service_healthy
@@ -47,12 +58,22 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-
     environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: booking_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      DB_ENGINE: ${DB_ENGINE}
+      DB_NAME_BOOKING: ${DB_NAME_BOOKING}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST_BOOKING: ${DB_HOST_BOOKING}
+      DB_PORT: ${DB_PORT}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DEBUG}
+      ALLOWED_HOSTS_BOOKING: ${ALLOWED_HOSTS_BOOKING}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      AUTH_SERVICE_URL: ${AUTH_SERVICE_URL}
+      FEEDBACK_SERVICE_URL: ${FEEDBACK_SERVICE_URL}
+      BOOKING_SERVICE_URL: ${BOOKING_SERVICE_URL}
+      COMMENTS_SERVICE_URL: ${COMMENTS_SERVICE_URL}
     depends_on:
       postgres:
         condition: service_healthy
@@ -66,10 +87,21 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: comments_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      DB_ENGINE: ${DB_ENGINE}
+      DB_NAME_COMMENTS: ${DB_NAME_COMMENTS}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST_COMMENTS: ${DB_HOST_COMMENTS}
+      DB_PORT: ${DB_PORT}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DEBUG}
+      ALLOWED_HOSTS_COMMENTS: ${ALLOWED_HOSTS_COMMENTS}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      AUTH_SERVICE_URL: ${AUTH_SERVICE_URL}
+      FEEDBACK_SERVICE_URL: ${FEEDBACK_SERVICE_URL}
+      BOOKING_SERVICE_URL: ${BOOKING_SERVICE_URL}
+      COMMENTS_SERVICE_URL: ${COMMENTS_SERVICE_URL}
     depends_on:
       postgres:
         condition: service_healthy
@@ -83,10 +115,28 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: feedback_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      DB_ENGINE: ${DB_ENGINE}
+      DB_NAME_FEEDBACK: ${DB_NAME_FEEDBACK}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST_FEEDBACK: ${DB_HOST_FEEDBACK}
+      DB_PORT: ${DB_PORT}
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DEBUG}
+      ALLOWED_HOSTS_FEEDBACK: ${ALLOWED_HOSTS_FEEDBACK}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+      EMAIL_HOST: ${EMAIL_HOST}
+      EMAIL_PORT: ${EMAIL_PORT}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL}
+      AUTH_SERVICE_URL: ${AUTH_SERVICE_URL}
+      FEEDBACK_SERVICE_URL: ${FEEDBACK_SERVICE_URL}
+      BOOKING_SERVICE_URL: ${BOOKING_SERVICE_URL}
+      COMMENTS_SERVICE_URL: ${COMMENTS_SERVICE_URL}
     depends_on:
       postgres:
         condition: service_healthy
