@@ -1,4 +1,5 @@
 import json
+import random
 import requests as http_requests
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
@@ -44,23 +45,34 @@ def submit_feedback(request):
 
     FeedbackMessage.objects.create(name=name, email=email, subject=subject, message=message)
 
-    if settings.TELEGRAM_BOT_TOKEN and settings.TELEGRAM_CHAT_ID:
-        text = (
-            f"💬 <b>Обратная связь</b>\n"
-            f"👤 {name}\n📧 {email}\n"
-            f"📌 {SUBJECT_LABELS[subject]}\n"
-            f"💭 {message}\n"
+    if settings.VK_GROUP_TOKEN and settings.VK_ADMIN_ID:
+        vk_message = (
+            f"💬 Обратная связь\n"
+            f"👤 Имя: {name}\n"
+            f"📧 Email: {email}\n"
+            f"📌 Тема: {SUBJECT_LABELS[subject]}\n"
+            f"💭 Сообщение: {message}\n"
             f"🕐 {timezone.now().strftime('%d.%m.%Y %H:%M')}"
         )
         try:
-            resp = http_requests.post(
-                f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage",
-                json={"chat_id": settings.TELEGRAM_CHAT_ID, "text": text, "parse_mode": "HTML"},
+            resp = http_requests.get(
+                "https://api.vk.com/method/messages.send",
+                params={
+                    "user_id": settings.VK_ADMIN_ID,
+                    "message": vk_message,
+                    "random_id": random.randint(0, 2**31),
+                    "access_token": settings.VK_GROUP_TOKEN,
+                    "v": settings.VK_API_VERSION,
+                },
                 timeout=5,
             )
             resp.raise_for_status()
-            print(f"Telegram message sent successfully: {resp.json()}")
+            response_data = resp.json()
+            if "error" in response_data:
+                print(f"VK API error: {response_data['error']}")
+            else:
+                print(f"VK message sent successfully: {response_data}")
         except Exception as e:
-            print(f"Failed to send Telegram message: {e}")
+            print(f"Failed to send VK message: {e}")
 
     return JsonResponse({"success": True, "message": "Сообщение отправлено"})

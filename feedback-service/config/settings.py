@@ -43,8 +43,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 STATIC_URL = "/feedback/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
-TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
+# VK API configuration for feedback
+VK_GROUP_TOKEN = os.environ.get("VK_GROUP_TOKEN", "")
+VK_GROUP_ID = os.environ.get("VK_GROUP_ID", "")
+VK_ADMIN_ID = os.environ.get("VK_ADMIN_ID", "")
+VK_API_VERSION = "5.131"
 
 # Email configuration
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
