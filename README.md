@@ -41,22 +41,6 @@
 
 Nginx конфигурация проксирует запросы к соответствующим сервисам и управляет заголовками CORS.
 
-##  **Требуемые переменные окружения**
-Используйте `.env.example` как шаблон для создания `.env`.
-
-Обязательные переменные:
-* `POSTGRES_PASSWORD` — пароль для PostgreSQL
-* `DB_ENGINE`, `DB_USER`, `DB_PASSWORD`, `DB_PORT`
-* `DB_NAME_AUTH`, `DB_NAME_BOOKING`, `DB_NAME_COMMENTS`, `DB_NAME_FEEDBACK`
-* `DB_HOST_AUTH`, `DB_HOST_BOOKING`, `DB_HOST_COMMENTS`, `DB_HOST_FEEDBACK`
-* `JWT_SECRET_KEY`, `JWT_EXPIRATION_HOURS`
-* `VK_GROUP_TOKEN` — токен группы ВКонтакте для отправки сообщений
-* `VK_GROUP_ID` — ID группы ВКонтакте
-* `VK_ADMIN_ID` — ID админа для личных сообщений VK
-* `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL`
-* `ALLOWED_HOSTS_*` для каждого сервиса
-
-> Для безопасности не храните реальные секреты в репозитории. `.env` не должен коммититься.
 
 ##  **Запуск проекта локально**
 
