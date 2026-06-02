@@ -47,12 +47,11 @@ def submit_feedback(request):
 
     if settings.VK_GROUP_TOKEN and settings.VK_ADMIN_ID:
         vk_message = (
-            f"💬 Обратная связь\n"
-            f"👤 Имя: {name}\n"
-            f"📧 Email: {email}\n"
-            f"📌 Тема: {SUBJECT_LABELS[subject]}\n"
-            f"💭 Сообщение: {message}\n"
-            f"🕐 {timezone.now().strftime('%d.%m.%Y %H:%M')}"
+            f"Обратная связь:\n"
+            f"   Имя: {name}. Email: {email}\n"
+            f"   Тема: {SUBJECT_LABELS[subject]}\n"
+            f"   Дата и Время: {timezone.now().strftime('%d.%m.%Y %H:%M')}\n"
+            f"СООБЩЕНИЕ: {message}"
         )
         try:
             resp = http_requests.get(
