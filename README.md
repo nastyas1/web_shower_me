@@ -100,11 +100,6 @@ docker compose down -v
 * `feedback-service/tests/test_views.py`
 * `booking-service/tests/test_views.py`
 
-Запуск локальных тестов внутри сервиса:
-```bash
-# из каталога каждого сервиса
-python -m pytest
-```
 
 ##  **Особенности реализации**
 * **SSE в `comments-service`**: поток `/comments/stream/` работает без буферизации для мгновенного обновления UI.
