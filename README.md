@@ -1,0 +1,147 @@
+# **🛁 Web Shower Copy — Cайт бронирования душевых в общежитии**
+
+Учебный проект для автоматизации бронирования душевых комнат в общежитии. Сайт помогает студентам выбирать удобные слоты, оставлять отзывы и отправлять обратную связь администратору через ВКонтакте.
+
+##  **О проекте**
+Сервис реализован в виде набора Django-приложений, каждый из которых работает в собственном контейнере:
+* `auth-service` — авторизация, регистрация и профиль пользователя
+* `booking-service` — выбор времени и бронирование душевых
+* `comments-service` — комментарии и SSE-поток для реального времени
+* `feedback-service` — сохранение отзывов и отправка уведомлений в ВКонтакте
+* `nginx` — API-шлюз и обратный прокси для маршрутизации
+* `postgres` — общая база данных PostgreSQL
+
+##  **Функциональные возможности**
+* Регистрация и вход пользователя
+* Бронирование слотов душевых в общежитии
+* Лента комментариев с обновлением в реальном времени через **Server-Sent Events (SSE)**
+* Форма обратной связи с отправкой уведомлений администратору через **VK API (`messages.send`)**
+* Централизованная маршрутизация запросов через **Nginx**
+
+##  **Технологии**
+* **Python 3.11**
+* **Django**
+* **PostgreSQL**
+* **Nginx**
+* **Docker** и **Docker Compose**
+* **VK API** для отправки фидбека в личные сообщения администратора
+* **GitHub Actions** для CI/CD
+
+##  **Архитектура**
+Проект состоит из следующих сервисов:
+
+| Сервис | Описание | Порт внутри сети | Путь | 
+|---|---|---|---|
+| `auth-service` | Авторизация и регистрация | `8000` | `/auth/` |
+| `booking-service` | Бронирование слотов | `8000` | `/booking/` |
+| `comments-service` | Комментарии и SSE | `8000` | `/comments/`, `/comments/stream/` |
+| `feedback-service` | Обратная связь и VK-уведомления | `8000` | `/feedback/` |
+| `nginx` | API gateway | `80` | `http://localhost` |
+| `postgres` | БД PostgreSQL | `5432` | — |
+
+Nginx конфигурация проксирует запросы к соответствующим сервисам и управляет заголовками CORS.
+
+##  **Требуемые переменные окружения**
+Используйте `.env.example` как шаблон для создания `.env`.
+
+Обязательные переменные:
+* `POSTGRES_PASSWORD` — пароль для PostgreSQL
+* `DB_ENGINE`, `DB_USER`, `DB_PASSWORD`, `DB_PORT`
+* `DB_NAME_AUTH`, `DB_NAME_BOOKING`, `DB_NAME_COMMENTS`, `DB_NAME_FEEDBACK`
+* `DB_HOST_AUTH`, `DB_HOST_BOOKING`, `DB_HOST_COMMENTS`, `DB_HOST_FEEDBACK`
+* `JWT_SECRET_KEY`, `JWT_EXPIRATION_HOURS`
+* `VK_GROUP_TOKEN` — токен группы ВКонтакте для отправки сообщений
+* `VK_GROUP_ID` — ID группы ВКонтакте
+* `VK_ADMIN_ID` — ID админа для личных сообщений VK
+* `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL`
+* `ALLOWED_HOSTS_*` для каждого сервиса
+
+> Для безопасности не храните реальные секреты в репозитории. `.env` не должен коммититься.
+
+##  **Запуск проекта локально**
+
+### 1. Склонируйте репозиторий
+```bash
+git clone <адрес_репозитория>
+cd web_shower_copy
+```
+
+### 2. Скопируйте пример конфигурации
+```bash
+cp .env.example .env
+```
+
+### 3. Заполните `.env`
+Отредактируйте `.env` и укажите рабочие значения для PostgreSQL, VK и email.
+
+### 4. Запустите Docker Compose
+```bash
+docker compose up --build
+```
+
+### 5. Откройте приложение
+Перейдите в браузере по адресу:
+```text
+http://localhost
+```
+
+### 6. Остановка и очистка
+```bash
+docker compose down
+```
+
+Если нужно сбросить базу данных:
+```bash
+docker compose down -v
+```
+
+##  **CI/CD**
+Проект содержит GitHub Actions в папке `.github/workflows`.
+
+### CI (файл `.github/workflows/ci.yml`)
+* Запускается на `push` в ветки `main` и `dev`, а также на `pull_request` в `main`
+* Выполняет:
+  * `python manage.py check --deploy`
+  * `python manage.py migrate --check`
+  * сборку Docker-образов монолита и микросервисов
+
+### CD (файл `.github/workflows/cd.yml`)
+* Запускается на `push` в ветку `main`
+* Выполняет сборку и публикацию Docker-образов в GitHub Container Registry
+* Сервисы публикуются с тегами SHA и `latest`
+
+##  **Тестирование**
+В проекте есть тесты для сервисов.
+Примеры:
+* `feedback-service/tests/test_views.py`
+* `booking-service/tests/test_views.py`
+
+Запуск локальных тестов внутри сервиса:
+```bash
+# из каталога каждого сервиса
+python -m pytest
+```
+
+##  **Особенности реализации**
+* **SSE в `comments-service`**: поток `/comments/stream/` работает без буферизации для мгновенного обновления UI.
+* **VK API**: `feedback-service` отправляет уведомления в личные сообщения администратора через метод `messages.send`.
+* **Nginx** управляет маршрутизацией всех API-запросов и добавляет CORS-заголовки.
+
+##  **Структура проекта**
+Корневая структура:
+* `auth-service/`
+* `booking-service/`
+* `comments-service/`
+* `feedback-service/`
+* `nginx/`
+* `postgres-init/`
+* `docker-compose.yml`
+* `.env.example`
+* `.github/workflows/`
+
+
+##  **Примечания**
+* Для работы feedback-уведомлений через VK требуется активный токен группы и права на отправку сообщений.
+* Если Nginx возвращает `502 Bad Gateway`, проверьте состояние микросервисов и подключение к PostgreSQL.
+* В `.env.example` уже указаны шаблонные ключи и переменные для всего стека.
+
