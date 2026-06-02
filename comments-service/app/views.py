@@ -19,7 +19,7 @@ def comments_page(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def list_comments(request):
-    """GET /comments/ — последние 100 комментариев."""
+    """GET /comments/api/ — последние 100 комментариев."""
     comments = Comment.objects.order_by("-created_at")[:100]
     return JsonResponse({"comments": [c.to_dict() for c in comments]})
 

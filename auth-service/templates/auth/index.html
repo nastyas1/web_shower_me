@@ -1,0 +1,24 @@
+{% extends 'auth/base.html' %}
+{% block title %}Главная{% endblock %}
+{% block content %}
+<div class="card" style="text-align: center; padding: 50px 20px;">
+    <h1 style="font-size: 2.5rem; margin-bottom: 20px;">Добро пожаловать в ШоуРум</h1>
+    <p style="font-size: 1.2rem; margin-bottom: 30px; color: #555;">Система бронирования душевых комнат нового поколения.</p>
+    {% if user.is_authenticated %}
+        <a href="/booking/" class="btn">Забронировать душ</a>
+        <a href="/mybookings/" class="btn" style="background-color: #6c757d; margin-left: 10px;">Мои брони</a>
+    {% else %}
+        <a href="/signup/" class="btn">Начать пользоваться</a>
+        <a href="/login/" class="btn" style="background-color: #6c757d; margin-left: 10px;">Войти</a>
+    {% endif %}
+</div>
+<div class="card" style="margin-top: 30px;">
+    <h3>Преимущества:</h3>
+    <ul style="line-height: 1.8;">
+        <li>🚿 Современные душевые кабины</li>
+        <li>⏰ Гибкое расписание</li>
+        <li>🔒 Приватность</li>
+        <li>🧼 Чистота</li>
+    </ul>
+</div>
+{% endblock %}

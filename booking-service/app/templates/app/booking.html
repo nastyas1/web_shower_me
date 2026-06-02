@@ -68,6 +68,7 @@
         async function checkAuth() {
             const savedToken = localStorage.getItem('access_token');
             if (!savedToken) {
+                console.warn('Нет сохранённого токена, показываем предупреждение');
                 document.getElementById('auth-warning').classList.remove('hidden');
                 document.getElementById('booking-section').classList.add('hidden');
                 document.getElementById('user-nav').classList.add('hidden');
@@ -76,11 +77,20 @@
             
             try {
                 const response = await fetch('/auth/me/', {
-                    headers: { 'Authorization': `Bearer ${savedToken}` }
+                    method: 'GET',
+                    headers: { 
+                        'Authorization': `Bearer ${savedToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'same-origin'
                 });
+                
+                console.log('Проверка токена, статус:', response.status);
+                
                 if (response.ok) {
                     currentUser = await response.json();
                     accessToken = savedToken;
+                    console.log('Токен валиден, пользователь:', currentUser.name);
                     document.getElementById('auth-warning').classList.add('hidden');
                     document.getElementById('booking-section').classList.remove('hidden');
                     document.getElementById('user-nav').classList.remove('hidden');
@@ -88,6 +98,8 @@
                     loadSlots();
                     loadMyBookings();
                     return true;
+                } else {
+                    console.error('Токен недействителен, статус:', response.status);
                 }
             } catch (err) {
                 console.error('Ошибка проверки токена:', err);
@@ -112,7 +124,12 @@
             if (!date) return;
             
             try {
-                const response = await fetch(`${API_BASE}/slots/?date=${date}`);
+                const headers = {};
+                if (accessToken) {
+                    headers['Authorization'] = `Bearer ${accessToken}`;
+                }
+                
+                const response = await fetch(`${API_BASE}/slots/?date=${date}`, { headers });
                 const data = await response.json();
                 
                 const container = document.getElementById('slots-container');
@@ -167,49 +184,76 @@
         }
         
         async function loadMyBookings() {
+            if (!accessToken) {
+                console.warn('Нет токена для загрузки бронирований');
+                return;
+            }
+            
             try {
                 const response = await fetch(`${API_BASE}/my/`, {
                     headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    const list = document.getElementById('my-bookings-list');
-                    
-                    if (data.bookings.length === 0) {
-                        list.innerHTML = '<p style="color: #666;">У вас пока нет бронирований</p>';
-                    } else {
-                        list.innerHTML = data.bookings.map(b => `
-                            <div class="booking-item">
-                                <span>📅 ${b.date} в ${b.time}</span>
-                                <button onclick="cancelBookingById(${b.id})" style="padding: 0.25rem 0.5rem; background: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer;">Отменить</button>
-                            </div>
-                        `).join('');
+
+                if (!response.ok) {
+                    console.error('Ошибка загрузки бронирований:', response.status);
+                    if (response.status === 401) {
+                        localStorage.removeItem('access_token');
+                        localStorage.removeItem('refresh_token');
+                        location.reload();
                     }
+                    return;
+                }
+
+                const data = await response.json();
+                const list = document.getElementById('my-bookings-list');
+
+                if (data.bookings.length === 0) {
+                    list.innerHTML = '<p style="color: #666;">У вас пока нет бронирований</p>';
+                } else {
+                    list.innerHTML = data.bookings.map(b => `
+                        <div class="booking-item">
+                            <span>📅 ${b.date} в ${b.time}</span>
+                            <button onclick="cancelBookingById(${b.id})" style="padding: 0.25rem 0.5rem; background: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer;">Отменить</button>
+                        </div>
+                    `).join('');
                 }
             } catch (err) {
                 console.error('Ошибка загрузки бронирований:', err);
             }
         }
         
+
         async function cancelBookingById(id) {
             if (!confirm('Отменить это бронирование?')) return;
-            
+
+            if (!accessToken) {
+                alert('Требуется авторизация для отмены брони');
+                return;
+            }
+
             try {
                 const response = await fetch(`${API_BASE}/cancel/${id}/`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
-                
+
                 if (response.ok) {
                     alert('Бронь отменена');
                     loadSlots();
                     loadMyBookings();
                 } else {
-                    alert('Ошибка отмены брони');
+                    const errorData = await response.json().catch(() => ({}));
+                    if (response.status === 401) {
+                        localStorage.removeItem('access_token');
+                        localStorage.removeItem('refresh_token');
+                        location.reload();
+                    } else {
+                        alert(errorData.error || 'Ошибка отмены брони');
+                    }
                 }
             } catch (err) {
                 console.error('Ошибка отмены:', err);
+                alert('Ошибка соединения с сервером');
             }
         }
         
